@@ -25,7 +25,6 @@
 
 define("REQUEST_URL", "https://retention.midmich.edu/instructor/users/{{user_name}}/course_sections.json");
 define("CURL_TIMEOUT", 1000);      //ms
-define("API_TOKEN", "");
 
 class block_mmcc_retention extends block_list {
 
@@ -39,8 +38,7 @@ class block_mmcc_retention extends block_list {
     }
 
     public function has_config() {
-        // no global configuration for this block
-        return false;
+        return true;
     }
 
     public function get_content() {
@@ -53,33 +51,47 @@ class block_mmcc_retention extends block_list {
 
         $this->content          = new stdClass;
         if (has_capability('moodle/course:update', $context)) {
+
+            $this->mmcc_config = get_config('block_mmcc_retention');
+
             $this->content->items   = array();
             $this->content->icons   = array();
             $this->content->footer  = "";
 
             $user_name = $USER->username;
-            $alerts = $this->get_retention_alerts($user_name);
+            $alerts = $this->get_retention_alerts($user_name, $this->mmcc_config->apitoken);
 
-            if (isset($alerts["error"]) && "" !== $alerts["error"]) {
+            if ("" !== $alerts["error"]) {
                 $this->content->items[] = html_writer::tag('span', $alerts["error"]);
-                $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/flagged', 'core'), 'class' => 'icon'));
+                $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/invalid', 'core'), 'class' => 'icon'));
             }
             else {
+                $count = 0;
                 foreach($alerts["course_sections"] as $alert) {
+                    $count++;
                     $text = $alert["short_name"] . ' ' . $alert["title"] . " (" . $alert["unread_count"] . ")";
 
                     $this->content->items[] = html_writer::tag('a', $text, array('href' => $alert["url"], "target" => "_blank"));
-                    $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/flagged', 'core'), 'class' => 'icon'));
+                    $img = 't/messages';
+                    if (0 != $alert["unread_count"]) {
+                        $img = "i/flagged";
+                    }
+                    $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url($img, 'core'), 'class' => 'icon'));
                 }
 
-                $this->content->footer  = "Displaying Unread RMS Alerts counts for $user_name";
+                if (0 == $count) {
+                    $this->content->items[] = html_writer::tag('a', "Open the Retention Management System", array('href' => "https://retention.midmich.edu", "target" => "_blank"));
+                    $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/publish', 'core'), 'class' => 'icon'));
+                }
+
+                $this->content->footer = "Courses active in the RMS: " . $count;
             }
         }
 
         return $this->content;
     }
 
-    function get_retention_alerts( $user_name = "" ) {
+    function get_retention_alerts( $user_name = "", $api_token = "" ) {
         /*
          * We expect data of this form:
          * {"course_sections":
@@ -102,7 +114,7 @@ class block_mmcc_retention extends block_list {
             // Build headers
             $http_headers = array(
                 "Content-Type: application/json",
-                "X-API-KEY: " . API_TOKEN,
+                "X-API-KEY: " . $api_token,
             );
             $curl_handle = curl_init();
             curl_setopt($curl_handle, CURLOPT_URL, str_replace("{{user_name}}", $user_name, REQUEST_URL));
@@ -138,6 +150,19 @@ class block_mmcc_retention extends block_list {
         if (isset($curl_handle)) {
             curl_close($curl_handle);
             $curl_handle = NULL;
+        }
+
+        // Ensure these fields are set before returning
+        if (!isset($alerts["error"])) {
+            $alerts["error"] = "";
+        }
+
+        if (!isset($alerts["http_code"])) {
+            $alerts["http_code"] = "100";
+        }
+
+        if (!isset($alerts["course_sections"])) {
+            $alerts["course_sections"] = [];
         }
 
         return $alerts;

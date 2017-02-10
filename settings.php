@@ -23,8 +23,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$settings->add(new admin_setting_heading(
+            'headerconfig',
+            get_string('headerconfig', 'block_mmcc_retention'),
+            get_string('descconfig', 'block_mmcc_retention')
+        ));
 
-$plugin->component = 'block_mmcc_retention';     // Full name of the plugin (used for diagnostics)
-$plugin->version   = 2017021100;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014111000;        // Requires this Moodle version
+$settings->add(new admin_setting_configtext(
+            'block_mmcc_retention/apitoken',
+            get_string('configapitokentitle', 'block_mmcc_retention'),
+            get_string('configapitokendesc', 'block_mmcc_retention'),
+            ""));
+
+
