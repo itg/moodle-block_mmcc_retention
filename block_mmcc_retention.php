@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define("REQUEST_URL", "https://retention.midmich.edu/instructor/users/{{user_name}}/course_sections.json");
+define("REQUEST_URL", "https://rms.midmich.edu/instructor/users/{{user_name}}/course_sections.json");
 define("CURL_TIMEOUT", 1000);      //ms
 
 class block_mmcc_retention extends block_list {
@@ -80,7 +80,7 @@ class block_mmcc_retention extends block_list {
                 }
 
                 if (0 == $count) {
-                    $this->content->items[] = html_writer::tag('a', "Open the Retention Management System", array('href' => "https://retention.midmich.edu", "target" => "_blank"));
+                    $this->content->items[] = html_writer::tag('a', "Open the Referral Management System", array('href' => "https://rms.midmich.edu", "target" => "_blank"));
                     $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/publish', 'core'), 'class' => 'icon'));
                 }
 
@@ -99,7 +99,7 @@ class block_mmcc_retention extends block_list {
          *         {
          *         "title":"Intro Website Design",
          *         "short_name":"ART.152.M02",
-         *         "url":"https://retention.midmich.edu/instructor/course_sections/55134",
+         *         "url":"https://rms.midmich.edu/instructor/course_sections/55134",
          *         "unread_count":0
          *         }
          *     ]
