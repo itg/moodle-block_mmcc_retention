@@ -26,5 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_mmcc_retention';     // Full name of the plugin (used for diagnostics)
-$plugin->version   = 2018071100;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2021051800;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014111000;        // Requires this Moodle version
