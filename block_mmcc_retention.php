@@ -63,7 +63,7 @@ class block_mmcc_retention extends block_list {
 
             if ("" !== $alerts["error"]) {
                 $this->content->items[] = html_writer::tag('span', $alerts["error"]);
-                $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/invalid', 'core'), 'class' => 'icon'));
+                $this->content->icons[] = $OUTPUT->pix_icon('i/invalid');
             }
             else {
                 $count = 0;
@@ -76,12 +76,12 @@ class block_mmcc_retention extends block_list {
                     if (0 != $alert["unread_count"]) {
                         $img = "i/flagged";
                     }
-                    $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url($img, 'core'), 'class' => 'icon'));
+                    $this->content->icons[] = $OUTPUT->pix_icon($img);
                 }
 
                 if (0 == $count) {
                     $this->content->items[] = html_writer::tag('a', "Open the Referral Management System", array('href' => "https://rms.midmich.edu", "target" => "_blank"));
-                    $this->content->icons[] = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/publish', 'core'), 'class' => 'icon'));
+                    $this->content->icons[] = $OUTPUT->pix_icon('i/publish');
                 }
 
                 $this->content->footer = "Courses active in the RMS: " . $count;
